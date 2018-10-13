@@ -1,80 +1,92 @@
 const Router = require('koa-router');
 const user = require('../control/user');
-// const article = require('../control/article');
-// const comment = require('../control/comment');
-// const admin = require('../control/admin');
-// const upload = require('../util/upload');
+const article = require('../control/article');
+const comment = require('../control/comment');
+const admin = require('../control/admin');
+const upload = require('../util/upload');
 
 const router = new Router();
-/*
-//设计主页
-router.get('/',user.keepLogin,article.getList);
 
-//动态路由 主要用来处理 用户登入 注册 退出
-router.get(/^\/user\/(?=reg|login)/,async(ctx) => {
-    const show = /reg$/.test(ctx.path);
-    await ctx.render('register',{
-        show
-    })
+//获取所有文章列表
+router.get('/', article.getList);
+
+//获取当前文章详细内容
+router.get('/details', article.details);
+
+//保持用户登入
+router.get('/user', async (ctx, next) => {
+    // console.log(ctx.session)
+    // console.log(ctx.session.isNew)
+    // console.log(ctx.cookies.get('username'))
+    if (ctx.session.isNew) { //没有session
+        if (ctx.cookies.get('username')) {
+            ctx.session = {
+                username: ctx.cookies.get('username'),
+                uid: ctx.cookies.get('uid'),
+            }
+        }
+    }
+    ctx.body = {
+        session: ctx.session.isNew,
+        username: ctx.session.username,
+        uid: ctx.session.uid,
+        role: ctx.session.role
+    }
 });
 
 //用户登入
-router.post('/user/login', user.login );
+router.post('/user/login', user.login);
 
 //用户注册
-router.post('/user/reg', user.reg );
+router.post('/user/reg', user.reg);
 
 //用户退出
 router.get('/user/logout', user.logout);
 
-//文章发表页面
-router.get('/article',user.keepLogin,article.addPage);
-
 //文章发表
-router.post('/article',user.keepLogin,article.add);
+router.post('/article', user.keepLogin, article.publish);
+
+//文章发表页面
+// router.get('/article', user.keepLogin, article.addPage);
 
 //文章列表分页
-router.get('/page/:id',user.keepLogin,article.getList);
+// router.get('/page/:id', user.keepLogin, article.getList);
 
 //文章详情页
-router.get('/article/:id',user.keepLogin,article.details);
+// router.get('/article/:id', user.keepLogin, article.details);
 
 //发表评论
-router.post('/comment',user.keepLogin,comment.save);
+router.post('/comment', user.keepLogin, comment.save);
 
 //个人中心
-router.get('/admin/:id',user.keepLogin,admin.index);
+// router.get('/admin/:id', user.keepLogin, admin.index);
 
 //头像上传
-router.post('/upload',user.keepLogin,upload.single('file'),user.upload);
+router.post('/upload', user.keepLogin, upload.single('file'), user.upload);
 
 //获取所有用户
-router.get('/user/users',user.keepLogin,user.userlist);
+router.get('/user/users', user.keepLogin, user.userlist);
 
 //获取当前用户所有评论
-router.get('/user/comments',user.keepLogin,comment.comlist);
+router.get('/user/comments', user.keepLogin, comment.comlist);
 
 //获取当前用户所有文章
-router.get('/user/articles',user.keepLogin,article.artlist);
+router.get('/user/articles', user.keepLogin, article.currentList);
 
 //删除用户
-router.delete('/user/:id',user.keepLogin,user.del);
+router.delete('/user/:id', user.keepLogin, user.del);
 
 //删除当前用户评论
-router.delete('/comment/:id',user.keepLogin,comment.del);
+router.delete('/comment/:id', user.keepLogin, comment.del);
 
 //删除当前用户文章
-router.delete('/article/:id',user.keepLogin,article.del);
-
-
-
-
+router.delete('/article/delete', user.keepLogin, article.del);
 
 
 //404
-router.get('*',async ctx => {
+router.get('*', async ctx => {
 
-    return await ctx.render('404',{title: 404})
+    return await ctx.render('404', {title: 404})
 });
-*/
+
 module.exports = router;

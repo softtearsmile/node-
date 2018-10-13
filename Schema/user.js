@@ -9,7 +9,7 @@ const UserSchema = new Schema({
     },
     avatar : {
         type : String,
-        default : "/avatar/default.jpg" //默认值
+        default : "http://106.14.145.207/node/images/遥.jpg" //默认值
     },
     articleNum : Number,
     commentNum : Number,

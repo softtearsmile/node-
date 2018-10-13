@@ -2,7 +2,6 @@ const User = require('../models/user');
 const Article = require('../models/article');
 const Comment = require('../models/comment');
 
-
 //文章发表页
 exports.addPage = async ctx => {
     await ctx.render("add-article",{
@@ -12,17 +11,8 @@ exports.addPage = async ctx => {
 };
 
 //文章发表(存到数据库)
-exports.add = async ctx => {
-    //用户未登录
-    if (ctx.session.isNew){
-        return ctx.body = {
-            msg : "用户未登录",
-            status : 0,
-        }
-    }
-
-    //用户已登录
-
+exports.publish = async ctx => {
+    //用户已登录(前端已经设置)
     //文章数据
     const data = ctx.request.body;
     data.author = ctx.session.uid;
@@ -61,31 +51,25 @@ exports.getList = async ctx => {
     page--;
 
     //获取最大文章数
-    const maxNum = await Article.estimatedDocumentCount((err,num) => {
-        err?console.log(err):num;
-    });
+    // const maxNum = await Article.estimatedDocumentCount((err, num) => {
+    //     err ? console.log(err) : num;
+    // });
 
+    // .skip(5 * page) //每页2条
+    // .limit(5) //只读取2条
     //拿到列表数据
-    const artList = await Article
+    const articleList = await Article
         .find()
         .sort('-created') //降序
-        .skip(5 * page) //每页2条
-        .limit(5) //只读取2条
         .populate({
             path: 'author',
             select: '_id username avatar'
         })
         .then(data => data)
         .catch(err => console.log(err));
-
-
-
-    await ctx.render("index",{
-        title : "假装正经的博客",
-        session : ctx.session,
-        artList,
-        maxNum,
-    })
+    ctx.body = {
+        articleList,
+    }
 };
 
 //文章详情
@@ -131,22 +115,37 @@ exports.artlist = async ctx => {
     };
 };
 
+//获取当前用户的文章列表
+exports.currentList = async ctx => {
+    let uid = ctx.session.uid
+    const articleList = await Article
+        .find({author:uid})
+        // .populate({
+        //     path: 'author',
+        //     select: '_id username avatar'
+        // })
+        .then(data => data)
+        .catch(err => console.log(err));
+    ctx.body = {
+        articleList,
+    }
+}
+
 //删除文章
 exports.del = async ctx => {
-    const articleId = ctx.params.id;
-
+    console.log(ctx.query.uid)
+    let uid = ctx.query.uid
     let res = {
-        state: 1,
-        message: "删除成功",
+        status: 1,
+        msg: "删除成功",
     };
-
     await Article
-        .findById(articleId)
+        .findById(uid)
         .then(data => data.remove())
         .catch(err => {
             res = {
-                state: 0,
-                message: err,
+                status: 0,
+                msg: err,
             }
         });
 
