@@ -133,14 +133,14 @@ exports.currentList = async ctx => {
 
 //删除文章
 exports.del = async ctx => {
-    console.log(ctx.query.uid)
-    let uid = ctx.query.uid
+    // console.log(ctx.query.uid)
+    const articleId = ctx.query.uid
     let res = {
         status: 1,
         msg: "删除成功",
     };
     await Article
-        .findById(uid)
+        .findById(articleId)
         .then(data => data.remove())
         .catch(err => {
             res = {

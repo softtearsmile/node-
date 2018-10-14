@@ -158,14 +158,14 @@ exports.logout = async ctx => {
 };
 
 //获取用户
-exports.userlist = async ctx => {
-    const data = await User
+exports.userList = async ctx => {
+    const userList = await User
         .find()
         .then(data => data)
         .catch(err => console.log(err));
 
     ctx.body = {
-        data
+        userList
     };
 };
 
@@ -194,11 +194,11 @@ exports.upload = async ctx => {
 
 //删除用户
 exports.del = async ctx => {
-    const userId = ctx.params.id;
+    const userId = ctx.query.uid
     console.log(userId);
     let res = {
-        state: 1,
-        message: "删除成功",
+        status: 1,
+        msg: "删除成功",
     };
 
     await User

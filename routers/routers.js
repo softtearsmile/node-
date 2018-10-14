@@ -65,7 +65,7 @@ router.post('/comment', user.keepLogin, comment.save);
 router.post('/upload', user.keepLogin, upload.single('file'), user.upload);
 
 //获取所有用户
-router.get('/user/users', user.keepLogin, user.userlist);
+router.get('/user/users', user.keepLogin, user.userList);
 
 //获取当前用户所有评论
 router.get('/user/comments', user.keepLogin, comment.comlist);
@@ -74,7 +74,7 @@ router.get('/user/comments', user.keepLogin, comment.comlist);
 router.get('/user/articles', user.keepLogin, article.currentList);
 
 //删除用户
-router.delete('/user/:id', user.keepLogin, user.del);
+router.delete('/user/delete', user.keepLogin, user.del);
 
 //删除当前用户评论
 router.delete('/comment/:id', user.keepLogin, comment.del);
