@@ -74,8 +74,8 @@ exports.getList = async ctx => {
 
 //文章详情
 exports.details =async  ctx => {
-    const _id =ctx.params.id;
-
+    const _id = ctx.query.id;
+    
     //查找文章数据
     const article = await Article
         .findById(_id)
@@ -90,13 +90,10 @@ exports.details =async  ctx => {
         .then(data => data)
         .catch(err => console.log(err));
 
-    await ctx.render("article",{
-        title : article.title,
+     ctx.body={
         article,
-        session : ctx.session,
-        comment,
-    })
-
+        comment
+    }
 };
 
 //获取当前用户所有评论
@@ -133,8 +130,8 @@ exports.currentList = async ctx => {
 
 //删除文章
 exports.del = async ctx => {
-    // console.log(ctx.query.uid)
     const articleId = ctx.query.uid
+
     let res = {
         status: 1,
         msg: "删除成功",

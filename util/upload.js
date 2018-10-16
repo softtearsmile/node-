@@ -6,9 +6,9 @@ const storage = multer.diskStorage({
     destination: join(__dirname, "../images/avatar"),
     // 文件名
     filename(req, file, cb){
+        // console.log(file)
         const filename = file.originalname.split(".");
         cb(null, `${Date.now()}.${filename[filename.length - 1]}`)
-
     }
 });
 

@@ -9,7 +9,7 @@ exports.save = async ctx => {
         status: 0,
         msg : "用户未登录"
     };
-
+    console.log(ctx.cookies)
     //用户未登录
     if (ctx.session.isNew) {return ctx.body = message}
 
@@ -18,8 +18,6 @@ exports.save = async ctx => {
     //获取数据
     const data = ctx.request.body;
     data.from = ctx.session.uid;
-
-
 
     //保存评论到库
     await new Comment(data)
@@ -52,22 +50,20 @@ exports.save = async ctx => {
 exports.comlist = async ctx => {
     const uid =ctx.session.uid;
 
-    const data = await Comment
+    let commentList = await Comment
         .find({from: uid})
         .populate('article', 'title')
         .then(data => data)
         .catch(err => console.log(err));
 
     ctx.body = {
-        code: 0,
-        count: data.length,
-        data
+        commentList
     };
 };
 
 //删除评论
 exports.del = async ctx => {
-    const commentId = ctx.params.id;
+    const commentId = ctx.query.uid;
 
     let res = {
         state: 1,

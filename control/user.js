@@ -88,14 +88,14 @@ exports.login = async ctx => {
             if (data) {
                 //让用户在其 cookie 里设置 username
                 ctx.cookies.set("username", username, {
-                    domain: "localhost:8080",
+                    domain: "localhost",
                     path: '/',
                     maxAge: 36e5,
                     httpOnly: true,
                     overwrite: false,
                 });
                 ctx.cookies.set('uid', data[0]._id, {
-                    domain: "localhost:8080",
+                    domain: "localhost",
                     path: '/',
                     maxAge: 36e5,
                     httpOnly: true,
@@ -107,7 +107,6 @@ exports.login = async ctx => {
                     avatar: data[0].avatar,
                     role: data[0].role,
                 };
-                // console.log(ctx.session)
                 ctx.body = {
                     status: 1,
                     msg: "登入成功"
@@ -145,7 +144,6 @@ exports.keepLogin = async (ctx,next) => { //一般为第一个中间键
             }
         }
     }
-    // ctx.body={session:ctx.session.isNew}
     await next()
 };
 
@@ -171,21 +169,23 @@ exports.userList = async ctx => {
 
 //上传用户头像
 exports.upload = async ctx => {
-
     const filename = ctx.req.file.filename;
     let data = {
         status: 1,
-        message: "上传成功"
+        msg: "上传成功"
     };
-
-    await User.updateOne({_id: ctx.session.uid}, {$set: {avatar: "/avatar/" + filename}}, (err, res) => {
+    // http://106.14.145.207/node/images
+    await User.updateOne(
+        {_id: ctx.session.uid},
+        {$set: {avatar: "http://106.14.145.207/node/images/avatar/" + filename}},
+        (err, res) => {
         if (err) {
             return data = {
                 status: 0,
-                message: "上传失败"
+                msg: "上传失败"
             }
         } else {
-            ctx.session.avatar = "/avatar/" + filename;
+            ctx.session.avatar = "http://106.14.145.207/node/images/avatar/" + filename;
         }
     });
 
@@ -195,7 +195,7 @@ exports.upload = async ctx => {
 //删除用户
 exports.del = async ctx => {
     const userId = ctx.query.uid
-    console.log(userId);
+
     let res = {
         status: 1,
         msg: "删除成功",

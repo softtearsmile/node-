@@ -12,7 +12,7 @@ const CONFIG = {
     key: "Sid", //方便查找 (改)
     maxAge: 36e5, //保存的时间ms (改)
     overwrite: true, //是覆盖
-    httpOnly: false, //不能让客户端访问这个coookie
+    httpOnly: true, //不能让客户端访问这个coookie
     signed: true, //能签名
     rolling: true //记录最后一次操作保存
 };
@@ -39,9 +39,10 @@ app.use(body());
 //     }
 //     await next();
 // });
-
+// http://106.14.145.207
+// http://localhost:8080
 app.use(async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', 'http://localhost:8080'); //不能为*
+    ctx.set('Access-Control-Allow-Origin', 'http://106.14.145.207'); //不能为*
     ctx.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     ctx.set("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     ctx.set("Content-Type", "application/json;charset=utf-8");

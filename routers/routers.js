@@ -10,14 +10,12 @@ const router = new Router();
 //获取所有文章列表
 router.get('/', article.getList);
 
-//获取当前文章详细内容
-router.get('/details', article.details);
-
 //保持用户登入
 router.get('/user', async (ctx, next) => {
     // console.log(ctx.session)
     // console.log(ctx.session.isNew)
     // console.log(ctx.cookies.get('username'))
+    // console.log(ctx.cookies.get('uid'))
     if (ctx.session.isNew) { //没有session
         if (ctx.cookies.get('username')) {
             ctx.session = {
@@ -44,25 +42,13 @@ router.post('/user/reg', user.reg);
 router.get('/user/logout', user.logout);
 
 //文章发表
-router.post('/article', user.keepLogin, article.publish);
-
-//文章发表页面
-// router.get('/article', user.keepLogin, article.addPage);
-
-//文章列表分页
-// router.get('/page/:id', user.keepLogin, article.getList);
+router.post('/article/publish', user.keepLogin, article.publish);
 
 //文章详情页
-// router.get('/article/:id', user.keepLogin, article.details);
+router.get('/article/detail', user.keepLogin, article.details);
 
 //发表评论
-router.post('/comment', user.keepLogin, comment.save);
-
-//个人中心
-// router.get('/admin/:id', user.keepLogin, admin.index);
-
-//头像上传
-router.post('/upload', user.keepLogin, upload.single('file'), user.upload);
+router.post('/comment/publish', user.keepLogin, comment.save);
 
 //获取所有用户
 router.get('/user/users', user.keepLogin, user.userList);
@@ -77,16 +63,22 @@ router.get('/user/articles', user.keepLogin, article.currentList);
 router.delete('/user/delete', user.keepLogin, user.del);
 
 //删除当前用户评论
-router.delete('/comment/:id', user.keepLogin, comment.del);
+router.delete('/comment/delete', user.keepLogin, comment.del);
 
 //删除当前用户文章
 router.delete('/article/delete', user.keepLogin, article.del);
 
+//头像上传
+router.post('/upload',user.keepLogin,upload.single('file'), user.upload);
 
-//404
-router.get('*', async ctx => {
+//个人中心
+// router.get('/admin/:id', user.keepLogin, admin.index);
 
-    return await ctx.render('404', {title: 404})
-});
+//文章发表页面
+// router.get('/article', user.keepLogin, article.addPage);
+
+//文章列表分页
+// router.get('/page/:id', user.keepLogin, article.getList);
+
 
 module.exports = router;
