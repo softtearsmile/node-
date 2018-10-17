@@ -3,6 +3,7 @@ const router = require('./routers/routers')
 const body = require('koa-body')
 const session = require('koa-session')
 const cors = require('@koa/cors')
+const { join } = require('path');
 
 const app = new koa()
 
@@ -21,7 +22,28 @@ const CONFIG = {
 app.use(session(CONFIG, app));
 
 //配置koa-body 处理 post请求数据
-app.use(body());
+app.use(body({
+    multipart: true,
+    formidable: {
+        // 上传存放的路径
+        uploadDir: join(__dirname, "images/avatar/"),
+        // 保持后缀不变
+        keepExtensions: true,
+        // 文件大小
+        maxFileSize: 61704,
+        onFileBegin: (name, file) => {
+            // 取后缀  如：.js  .txt
+            const reg = /\.[A-Za-z]+$/g
+            const ext = file.name.match(reg)[0]
+            // 修改上传文件名
+            file.path = join(__dirname, "images/avatar/") + Date.now() + ext
+            file.name = Date.now() + ext
+        },
+        onError(err){
+            console.log(err)
+        }
+    }
+}));
 
 //解决跨域问题
 // let whiteList = ['localhost:8080']
@@ -42,7 +64,7 @@ app.use(body());
 // http://106.14.145.207
 // http://localhost:8080
 app.use(async (ctx, next) => {
-    ctx.set('Access-Control-Allow-Origin', 'http://106.14.145.207'); //不能为*
+    ctx.set('Access-Control-Allow-Origin', 'http://localhost:8080'); //不能为*
     ctx.set("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     ctx.set("Access-Control-Allow-Methods","PUT,POST,GET,DELETE,OPTIONS");
     ctx.set("Content-Type", "application/json;charset=utf-8");

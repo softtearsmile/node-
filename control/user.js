@@ -169,15 +169,16 @@ exports.userList = async ctx => {
 
 //上传用户头像
 exports.upload = async ctx => {
-    const filename = ctx.req.file.filename;
+    
+    const filename = ctx.request.files.file.name
     let data = {
         status: 1,
         msg: "上传成功"
     };
-    // http://106.14.145.207/node/images
+    // http://106.14.145.207/node/node-blog/images
     await User.updateOne(
         {_id: ctx.session.uid},
-        {$set: {avatar: "http://106.14.145.207/node/images/avatar/" + filename}},
+        {$set: {avatar: "http://106.14.145.207/node/node-blog/images/avatar/" + filename}},
         (err, res) => {
         if (err) {
             return data = {
@@ -185,7 +186,7 @@ exports.upload = async ctx => {
                 msg: "上传失败"
             }
         } else {
-            ctx.session.avatar = "http://106.14.145.207/node/images/avatar/" + filename;
+            ctx.session.avatar = "http://106.14.145.207/node/node-blog/images/avatar/" + filename;
         }
     });
 

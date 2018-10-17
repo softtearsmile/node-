@@ -11,7 +11,7 @@ const router = new Router();
 router.get('/', article.getList);
 
 //保持用户登入
-router.get('/user', async (ctx, next) => {
+router.get('/user', (ctx, next) => {
     // console.log(ctx.session)
     // console.log(ctx.session.isNew)
     // console.log(ctx.cookies.get('username'))
@@ -28,7 +28,8 @@ router.get('/user', async (ctx, next) => {
         session: ctx.session.isNew,
         username: ctx.session.username,
         uid: ctx.session.uid,
-        role: ctx.session.role
+        role: ctx.session.role,
+        avatar: ctx.session.avatar,
     }
 });
 
@@ -69,8 +70,8 @@ router.delete('/comment/delete', user.keepLogin, comment.del);
 router.delete('/article/delete', user.keepLogin, article.del);
 
 //头像上传
-router.post('/upload',user.keepLogin,upload.single('file'), user.upload);
-
+router.post('/upload',user.keepLogin,user.upload);
+// upload.single('file'),
 //个人中心
 // router.get('/admin/:id', user.keepLogin, admin.index);
 
